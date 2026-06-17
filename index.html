@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>デジタル時計</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Fredoka:wght@600&family=Creepster&family=Bangers&family=Luckiest+Guy&family=Chewy&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-page: #F1EFE8;
+    --bg-card: #FFFFFF;
+    --text-primary: #2C2C2A;
+    --text-secondary: #5F5E5A;
+    --border: rgba(0,0,0,0.12);
+    --btn-active-bg: #E6F1FB;
+    --btn-active-text: #0C447C;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-page);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    max-width: 460px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  #timeDisplay {
+    font-family: 'VT323', monospace;
+    font-weight: 400;
+    font-size: 92px;
+    line-height: 1;
+    letter-spacing: 4px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    text-align: center;
+  }
+  #dateLabel {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  button {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  button:hover { background: rgba(0,0,0,0.04); }
+  button.active {
+    background: var(--btn-active-bg);
+    color: var(--btn-active-text);
+    border-color: var(--btn-active-bg);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div id="timeDisplay">
+    <span id="hh">00</span><span id="colon1">:</span><span id="mm">00</span><span id="colon2">:</span><span id="ss">00</span>
+  </div>
+  <span id="dateLabel"></span>
+  <div class="btn-row">
+    <button id="btn-retro" onclick="setFont('retro')">レトロ</button>
+    <button id="btn-pop" onclick="setFont('pop')">ポップ</button>
+    <button id="btn-horror" onclick="setFont('horror')">ホラー</button>
+    <button id="btn-comic" onclick="setFont('comic')">コミック</button>
+    <button id="btn-poster" onclick="setFont('poster')">ポスター</button>
+    <button id="btn-bubble" onclick="setFont('bubble')">バブル</button>
+  </div>
+</div>
+
+<script>
+var themes = {
+  retro:  { family: "'VT323', monospace",      weight: '400', size: '92px', spacing: '4px', accent: '#0F6E56' },
+  pop:    { family: "'Fredoka', sans-serif",     weight: '600', size: '64px', spacing: '1px', accent: '#D4537E' },
+  horror: { family: "'Creepster', cursive",      weight: '400', size: '56px', spacing: '2px', accent: '#A32D2D' },
+  comic:  { family: "'Bangers', cursive",        weight: '400', size: '68px', spacing: '3px', accent: '#BA7517' },
+  poster: { family: "'Luckiest Guy', cursive",   weight: '400', size: '58px', spacing: '2px', accent: '#534AB7' },
+  bubble: { family: "'Chewy', cursive",          weight: '400', size: '56px', spacing: '2px', accent: '#1D9E75' }
+};
+
+function setFont(key) {
+  var t = themes[key];
+  var el = document.getElementById('timeDisplay');
+  el.style.fontFamily = t.family;
+  el.style.fontWeight = t.weight;
+  el.style.fontSize = t.size;
+  el.style.letterSpacing = t.spacing;
+  document.getElementById('ss').style.color = t.accent;
+  document.getElementById('colon1').style.color = t.accent;
+  document.getElementById('colon2').style.color = t.accent;
+
+  Object.keys(themes).forEach(function (k) {
+    document.getElementById('btn-' + k).classList.toggle('active', k === key);
+  });
+}
+
+function tick() {
+  var now = new Date();
+  var hh = String(now.getHours()).padStart(2, '0');
+  var mm = String(now.getMinutes()).padStart(2, '0');
+  var ss = String(now.getSeconds()).padStart(2, '0');
+  var blink = now.getMilliseconds() < 500;
+
+  document.getElementById('hh').textContent = hh;
+  document.getElementById('mm').textContent = mm;
+  document.getElementById('ss').textContent = ss;
+  document.getElementById('colon1').style.opacity = blink ? '1' : '0.2';
+  document.getElementById('colon2').style.opacity = blink ? '1' : '0.2';
+
+  document.getElementById('dateLabel').textContent = now.toLocaleDateString('ja-JP', {
+    year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
+  });
+}
+
+setFont('pop');
+tick();
+setInterval(tick, 100);
+</script>
+
+</body>
+</html>
